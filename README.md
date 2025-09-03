@@ -1,4 +1,6 @@
 GlobalBooks: A Modern SOA Platform
+
+
 This document outlines the architecture and implementation of GlobalBooks, a robust Service-Oriented Architecture (SOA) platform designed for managing and processing book orders. This system is a showcase of real-world architectural patterns, including the use of both SOAP and REST services, and demonstrates asynchronous communication via enterprise messaging.
 
 Key Architectural Features
