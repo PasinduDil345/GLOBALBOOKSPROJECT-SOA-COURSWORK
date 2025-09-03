@@ -1,156 +1,390 @@
-GlobalBooks: A Contemporary SOA Platform
-This document describes the GlobalBooks platform, a modern, service-oriented architecture (SOA) for managing and fulfilling book orders. This system is a practical demonstration of a hybrid architecture that integrates both SOAP and RESTful services. It also showcases a message-driven approach to illustrate best practices in enterprise architecture.
+# 📚 GlobalBooks SOA System
 
-System Capabilities
-Hybrid Service Model: The system is built on a cohesive architecture that uses both SOAP and REST protocols to handle different types of service interactions.
+A **modern and scalable Service-Oriented Architecture (SOA)** solution designed for an **enterprise-level book ordering and management platform**. This project demonstrates how **SOAP** and **REST** services can work together with **enterprise messaging patterns**, following **real-world architectural best practices**.
 
-Decoupled Integration: An event-driven architecture leveraging RabbitMQ enables seamless asynchronous communication between services, ensuring they are not tightly dependent on one another.
+---
 
-Robust Security: The platform implements a comprehensive security framework with OAuth2 for REST APIs and WS-Security for SOAP services.
+# 🌟 System Highlights
+- **Hybrid Architecture** → Combines SOAP and REST seamlessly for flexible integration.  
+- **Enterprise Messaging** → Event-driven communication powered by RabbitMQ.  
+- **Security First** → Implements OAuth2 (REST) and WS-Security (SOAP) for robust protection.  
+- **Scalability** → Microservices packaged in Docker and orchestrated with Kubernetes.  
+- **Monitoring** → Built-in health checks, metrics, and observability tools.  
+- **Documentation** → Detailed API references and architecture diagrams included.  
+- **Testing** → Comprehensive unit, integration, and performance test suites.  
 
-Scalability: The system's services are built as containerized microservices for straightforward deployment and scaling using technologies like Docker and Kubernetes.
+💡 This section gives a high-level summary so readers know what makes the system special at a glance.  
 
-Observability: Integrated health checks and metrics provide essential monitoring capabilities for all services.
+---
 
-Detailed Documentation: The project includes complete API and architectural documentation to aid understanding and future development.
+# 🏗️ Architecture Overview  
 
-Comprehensive Testing: Extensive test suites for unit, integration, and performance testing ensure the reliability of all services.
+## 🔹 Core Services  
 
-Architectural Overview
-Core Services
-Catalog Service (SOAP)
+### 📖 Catalog Service (SOAP) – Port 8080  
+- **Tech Stack** → Java Spring Boot + JAX-WS  
+- **Protocol** → SOAP with WS-Security  
+- **Key Features**:  
+  - Manage and browse book catalog  
+  - Real-time price & availability checks  
+  - Category-based search functionality  
+  - Sync with inventory system  
+- **Integration** → WSDL available for service discovery  
 
-Port: 8080
+---
 
-Technology: Developed with Java Spring Boot and JAX-WS.
+### 🛒 Orders Service (REST) – Port 8082  
+- **Tech Stack** → Java Spring Boot  
+- **Protocol** → REST with OAuth2  
+- **Key Features**:  
+  - Order lifecycle management (create, update, cancel)  
+  - Order history and tracking  
+  - Business process orchestration  
+  - Event publishing to RabbitMQ  
+- **Integration** → Supports event-driven workflows  
 
-Protocol: SOAP with WS-Security.
+---
 
-Functionality: Manages the book catalog, handles real-time pricing and availability checks, and provides search functionality. It exposes a WSDL file for client consumption.
+### 💳 Payments Service (REST) – Port 8083  
+- **Tech Stack** → Java Spring Boot  
+- **Protocol** → REST microservice  
+- **Key Features**:  
+  - Secure payment handling  
+  - Multiple payment methods  
+  - Transaction history and refunds  
+- **Security** → PCI-DSS readiness for compliance  
 
-Orders Service (REST)
+---
 
-Port: 8082
+### 📦 Shipping Service (REST) – Port 8084  
+- **Tech Stack** → Java Spring Boot  
+- **Protocol** → REST microservice  
+- **Key Features**:  
+  - Shipment tracking and delivery updates  
+  - Estimated delivery time calculation  
+  - Multi-carrier logistics support  
+  - Address validation  
+- **Integration** → Provides real-time shipping updates  
 
-Technology: Built using Java Spring Boot.
+💡 Breaking down services like this makes it easy for contributors and reviewers to understand what each service does and how they connect.  
 
-Protocol: RESTful API with OAuth2 authentication.
+---
 
-Functionality: Manages the entire order lifecycle, from creation to tracking, and orchestrates business processes. It publishes order-related events to a RabbitMQ message broker.
+## 🔹 Integration Architecture  
 
-Payments Service (REST)
+### 📨 Message Broker – RabbitMQ  
+- Functions as an **Enterprise Service Bus (ESB)**  
+- Enables asynchronous communication patterns  
+- Supports dead-letter queues for error handling  
+- Ensures message persistence and reliability  
 
-Port: 8083
+---
 
-Technology: A REST microservice developed in Java Spring Boot.
+### 🔄 Process Orchestration – BPEL  
+- Coordinates **order fulfillment workflows**  
+- Handles **long-running business processes**  
+- Provides **compensation logic** for failed transactions  
+- Enables business process monitoring and visibility  
 
-Functionality: Processes secure payments, handles refunds, and maintains transaction history. It's designed with PCI-DSS compliance in mind.
+---
 
-Shipping Service (REST)
+### 🔐 Security Framework  
+- **OAuth2** → Authentication & authorization for REST services  
+- **WS-Security** → Ensures SOAP message integrity and confidentiality  
+- **JWT** → Token-based access management  
+- **RBAC** → Role-based access control for fine-grained permissions  
 
-Port: 8084
+💡 This integration section shows how the system ties services together, ensures resilience, and secures communication.  
 
-Technology: A REST microservice also developed in Java Spring Boot.
+---
 
-Functionality: Manages shipment tracking, delivery estimates, and address validation, providing real-time shipping updates.
+# ⚙️ System Requirements  
 
-Integration and Supporting Architecture
-Message Broker (RabbitMQ): This component acts as the Enterprise Service Bus (ESB), facilitating asynchronous messaging. It includes dead-letter queues for robust error handling.
+## 🖥️ Development Environment  
+- JDK **11+**  
+- Maven **3.6+**  
+- Docker Engine **20.10+**  
+- Docker Compose **2.0+**  
+- Git **2.0+**  
+- **8 GB RAM (16 GB recommended)**  
+- **20 GB disk space**  
 
-Process Orchestration (BPEL): BPEL coordinates the complex order fulfillment workflow, managing long-running transactions and error compensation.
+---
 
-Security Framework: The system utilizes OAuth2 with JWT tokens for REST services and WS-Security for SOAP. It also implements Role-Based Access Control (RBAC) to manage user permissions.
+## ☁️ Production Environment  
+- Kubernetes **1.20+ cluster**  
+- Node requirements:  
+  - **16 GB RAM minimum**  
+  - **4 CPU cores minimum**  
+  - **50 GB storage per node**  
+- Load balancer support  
+- Persistent volume support  
 
-System Requirements
-Development Environment
-Java Development Kit (JDK): 11 or newer
+💡 Splitting dev and prod requirements makes it easier for teams to prepare their environments correctly.  
 
-Maven: 3.6+
+---
 
-Docker Engine: 20.10+
+# 🏛️ Architecture Patterns Demonstrated  
+- **Service-Oriented Architecture (SOA)** → Core business functionality encapsulated as SOAP services using Spring Web Services.  
+- **Enterprise Service Bus (ESB)** → Message routing and transformation through a central integration layer.  
+- **Event-Driven Architecture** → Asynchronous messaging enabled with RabbitMQ.  
+- **Microservices** → Independent services packaged with Spring Boot and deployed in containers.  
+- **API Gateway Pattern** → REST endpoints secured with OAuth2, routing external requests into internal services.  
+- **Circuit Breaker Pattern** → Fault tolerance to prevent cascading failures during outages.  
+- **Saga Pattern (via BPEL Orchestration)** → Long-running business transactions coordinated with BPEL.  
 
-Docker Compose: 2.0+
+---
 
-Git: 2.0+
+# 🛠️ Technologies Used  
+- **Java 11** → Primary programming language  
+- **Spring Boot** → Application framework for microservices  
+- **Spring Web Services** → SOAP implementation  
+- **RabbitMQ** → Message broker for event-driven communication  
+- **Docker** → Service containerization  
+- **Kubernetes** → Deployment and orchestration platform  
+- **OAuth2** → REST API authentication and authorization  
+- **WS-Security** → Security for SOAP services  
+- **BPEL** → Business process orchestration (Saga pattern)  
+- **H2 Database** → In-memory database for development/testing  
 
-Memory: 8GB RAM minimum (16GB recommended)
+---
 
-Storage: 20GB free disk space
+# 🚀 Quick Start Guide  
 
-Production Environment
-Kubernetes Cluster: 1.20+
+## 🔹 Clone and Setup  
+```bash
+# Clone the repository
+git clone <repository-url>
+cd SOA
 
-Node Specifications: 16GB RAM, 4 CPU cores, and 50GB storage per node.
+# Setup environment variables
+copy .env.example .env
+# Edit .env with your configurations
 
-Requires support for a Load Balancer and Persistent Volumes.
+🔹 Build and Deploy
+# Build all services
+./13-scripts/build-all-services.sh
 
-Getting Started
-To get started, developers must clone the project's repository. After setting up environment variables, the services can be built and packaged using the provided scripts. Deployment can be initiated using Docker Compose, which starts all services in detached containers.
+# Deploy using Docker Compose
+cd 10-deployment
+docker compose up -d --build
 
-To verify the system's health, one can run a verification script or manually check the following health endpoints:
+🔹 Verify System Health
+# Run health check script
+./13-scripts/verify-deployment.sh
 
-Catalog Service: http://localhost:8080/soap/catalog?wsdl
 
-Orders API: http://localhost:8082/api/v1/orders/health
+Or check endpoints manually:
 
-Payments API: http://localhost:8083/api/v1/payments/health
+Catalog Service → http://localhost:8080/soap/catalog?wsdl
+Orders API → http://localhost:8082/api/v1/orders/health
+Payments API → http://localhost:8083/api/v1/payments/health
+Shipping API → http://localhost:8084/api/v1/shippings/health
+RabbitMQ Dashboard → http://localhost:15672
+ (default: admin/password123)
 
-Shipping API: http://localhost:8084/api/v1/shippings/health
+📄 Access Documentation
 
-RabbitMQ Dashboard: http://localhost:15672 (using admin/password123).
+API Docs → http://localhost:8082/swagger-ui.html
+Architecture Diagrams → 01-design-artifacts/architecture-diagrams/
+Integration Guide → 11-documentation/integration-guide.md
 
-API documentation is accessible at http://localhost:8082/swagger-ui.html, with architectural diagrams and an integration guide also provided.
+🌐 Service Endpoints
 
-Service Endpoints
 Orders Service (REST API)
-POST /api/v1/orders: Creates a new order.
-
-GET /api/v1/orders: Retrieves all orders.
-
-GET /api/v1/orders/{id}: Gets an order by its ID.
-
-PUT /api/v1/orders/{id}/status: Updates an order's status.
-
-DELETE /api/v1/orders/{id}: Cancels an order.
+POST /api/v1/orders → Create new order
+GET /api/v1/orders → Get all orders
+GET /api/v1/orders/{id} → Get order by ID
+PUT /api/v1/orders/{id}/status → Update order status
+DELETE /api/v1/orders/{id} → Cancel order
+GET /api/v1/orders/health → Health check
 
 Payments Service (REST API)
-POST /api/v1/payments/initiate: Initiates a payment.
-
-POST /api/v1/payments/{id}/process: Processes a payment.
-
-GET /api/v1/payments/{id}: Gets payment details.
-
-GET /api/v1/payments/order/{orderId}: Retrieves payments by order.
+POST /api/v1/payments/initiate → Initiate payment
+POST /api/v1/payments/{id}/process → Process payment
+GET /api/v1/payments/{id} → Get payment details
+GET /api/v1/payments/order/{orderId} → Get payments by order
+GET /api/v1/payments/health → Health check
 
 Shipping Service (REST API)
-POST /api/v1/shippings: Creates a new shipment.
-
-POST /api/v1/shippings/{id}/process: Processes a shipment.
-
-GET /api/v1/shippings/{id}: Gets shipment details.
-
-GET /api/v1/shippings/tracking/{num}: Tracks a shipment.
+POST /api/v1/shippings → Create shipping
+POST /api/v1/shippings/{id}/process → Process shipping
+GET /api/v1/shippings/{id} → Get shipping details
+GET /api/v1/shippings/tracking/{num} → Track shipment
+GET /api/v1/shippings/health → Health check
 
 Catalog Service (SOAP)
-The WSDL for this service is available at http://localhost:8080/soap/catalog?wsdl. Operations include searchBooks, getBookById, getBookPrice, and checkAvailability.
+WSDL → http://localhost:8080/soap/catalog?wsdl
 
-Message Flow
-A client places an order through the Orders Service REST API.
+Operations:
+searchBooks → Search by query/category
+getBookById → Get book details by ID
+getBookPrice → Fetch book price
+checkAvailability → Verify availability
 
-The Orders Service publishes an event to RabbitMQ.
+🔀 Message Flow
 
-The Payments and Shipping services consume these events to begin their processes.
+Order Creation → Client sends request via Orders Service
+Event Publishing → Orders Service publishes events to RabbitMQ
+Payment Processing → Payments Service consumes payment events
+Shipping Processing → Shipping Service consumes shipping events
+Orchestration → BPEL coordinates the entire workflow
 
-A BPEL process coordinates the overall workflow to ensure a smooth order fulfillment.
+🔐 Security
+Current Implementation
+SOAP → Basic Auth (WS-Security extension planned)
+REST → OAuth2 JWT token-based auth
+Keycloak → Identity management integrated (via Docker setup)
+Planned Enhancements
+WS-Security with UsernameToken for SOAP
+Full OAuth2 flows for REST APIs
+Mutual TLS between services
 
-Development and Contribution
-Developers can set up the environment and build individual services by navigating to their respective directories and using a build tool like Maven. Services can also be run locally using the Maven plugin.
+🧪 Testing
+Postman Collections
+09-testing/postman/GlobalBooks-SOA-Catalog.postman_collection.json
+09-testing/postman/GlobalBooks_Orders_API.postman_collection.json
 
-The project promotes best practices like static code analysis (mvn sonar:sonar), code formatting (mvn formatter:format), and a comprehensive testing strategy using unit (mvn test) and integration (mvn verify) tests.
+SOAP UI Tests
+09-testing/soap-ui/CatalogService-TestSuite.xml
 
-Contributions are welcomed via pull requests, following a standard workflow of forking the repository, creating a feature branch, implementing changes, and adding tests.
+💻 Development
+Setting Up Environment
 
-The project is logically organized into a clear directory structure, making it easy for new contributors to understand.
+# Verify Java
+java -version
 
-License
+# Verify Maven
+mvn -version
+
+# Verify Docker
+docker --version
+docker-compose --version
+
+Build Services Individually
+
+cd 02-catalog-service && mvn clean package
+cd 03-orders-service && mvn clean package
+cd 04-payments-service && mvn clean package
+cd 05-shipping-service && mvn clean package
+
+
+Run Services Locally
+
+cd 02-catalog-service && mvn spring-boot:run   # Port 8080
+cd 03-orders-service && mvn spring-boot:run    # Port 8082
+cd 04-payments-service && mvn spring-boot:run  # Port 8083
+cd 05-shipping-service && mvn spring-boot:run  # Port 8084
+
+📊 Monitoring
+
+Service Health Checks → Each service exposes health endpoints.
+RabbitMQ Management Dashboard → Monitor queues and routing.
+Spring Boot Actuator → Access metrics and system info.
+
+🚀 Deployment
+Docker Compose
+cd 10-deployment
+docker compose up -d --build
+
+Kubernetes
+
+Configurations → 10-deployment/kubernetes/
+Includes deployments, services, and configs for cluster setup.
+
+🧑‍💻 Development Best Practices
+Code Quality
+
+mvn sonar:sonar      # Run static analysis
+mvn formatter:format # Format code
+
+Testing
+
+mvn test    # Unit tests
+mvn verify  # Integration tests
+Load test scripts → 09-testing/performance/
+
+Documentation
+
+mvn javadoc:javadoc
+API docs → 11-documentation/api-docs/
+
+📂 Project Structure
+
+├── 01-design-artifacts/          
+│   ├── architecture-diagrams/    
+│   ├── governance-policy.md      
+│   └── soa-design-document.md    
+│
+├── 02-catalog-service/           
+│   ├── src/                      
+│   ├── Dockerfile                
+│   └── pom.xml                   
+│
+├── 03-orders-service/            
+│   ├── src/                      
+│   ├── Dockerfile                
+│   └── pom.xml                   
+│
+├── 04-payments-service/          
+│   ├── src/                      
+│   ├── Dockerfile                
+│   └── pom.xml                   
+│
+├── 05-shipping-service/          
+│   ├── src/                      
+│   ├── Dockerfile                
+│   └── pom.xml                   
+│
+├── 06-bpel-orchestration/        
+│   ├── deployment/               
+│   ├── processes/                
+│   └── wsdl/                     
+│
+├── 07-integration/               
+│   ├── consumers/                
+│   ├── producers/                
+│   └── rabbitmq/                 
+│
+├── 08-security/                  
+│   ├── certificates/             
+│   ├── oauth2/                   
+│   └── ws-security/              
+│
+├── 09-testing/                   
+│   ├── integration-tests/        
+│   ├── performance/              
+│   ├── postman/                  
+│   └── soap-ui/                  
+│
+├── 10-deployment/                
+│   ├── docker-compose.yml        
+│   ├── kubernetes/               
+│   ├── cloud/                    
+│   └── scripts/                  
+│
+├── 11-documentation/             
+│   └── api-docs/                 
+│
+├── 12-reports/                   
+│   └── viva-presentation/        
+│
+└── 13-scripts/                   
+    ├── setup-environment.sh      
+    └── test-soa-workflow.sh      
+
+🤝 Contributing
+
+We welcome contributions!
+
+Fork this repository
+
+Create a feature branch
+
+Make your changes (add tests where possible)
+
+Submit a pull request for review
+
+📜 License
+
 This project is licensed under the MIT License.
