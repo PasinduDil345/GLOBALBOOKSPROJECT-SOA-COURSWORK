@@ -373,16 +373,12 @@ API docs → 11-documentation/api-docs/
     ├── setup-environment.sh      
     └── test-soa-workflow.sh      
 
-🤝 Contributing
+Contributing
 
 We welcome contributions!
-
 Fork this repository
-
 Create a feature branch
-
 Make your changes (add tests where possible)
-
 Submit a pull request for review
 
 📜 License
