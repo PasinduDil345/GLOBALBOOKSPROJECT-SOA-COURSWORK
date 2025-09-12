@@ -1,0 +1,5 @@
+com\globalbooks\simpleorchestration\OrchestrationResponse.class
+com\globalbooks\simpleorchestration\PlaceOrderOrchestrationService.class
+com\globalbooks\simpleorchestration\OrchestrationRequest.class
+com\globalbooks\simpleorchestration\OrchestrationController.class
+com\globalbooks\simpleorchestration\SimpleOrchestrationApplication.class

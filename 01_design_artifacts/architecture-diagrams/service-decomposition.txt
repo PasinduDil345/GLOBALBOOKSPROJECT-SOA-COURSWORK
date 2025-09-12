@@ -1,0 +1,169 @@
+================================================================================
+                    SERVICE DECOMPOSITION DIAGRAM
+================================================================================
+
+BEFORE: MONOLITHIC ARCHITECTURE
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           GLOBALBOOKS MONOLITH                             │
+│                           (Single Application)                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+│                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                        BUSINESS LOGIC LAYER                            │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
+│  │  │   CATALOG   │  │   ORDERS    │  │  PAYMENTS   │  │  SHIPPING   │     │ │
+│  │  │  MANAGEMENT │  │ MANAGEMENT  │  │ MANAGEMENT  │  │ MANAGEMENT  │     │ │
+│  │  │             │  │             │  │             │  │             │     │ │
+│  │  │ • Book CRUD │  │ • Order CRUD│  │ • Payment   │  │ • Shipping  │     │ │
+│  │  │ • Search    │  │ • Status    │  │ • Processing│  │ • Tracking  │     │ │
+│  │  │ • Pricing   │  │ • History   │  │ • Refunds   │  │ • Labels    │     │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+│                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                        DATA ACCESS LAYER                               │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
+│  │  │ CATALOG DB  │  │ ORDERS DB   │  │ PAYMENTS DB │  │ SHIPPING DB │     │ │
+│  │  │ (Shared)    │  │ (Shared)    │  │ (Shared)    │  │ (Shared)    │     │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+│                                                                            │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                        PRESENTATION LAYER                              │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │ │
+│  │  │ WEB UI      │  │ REST API    │  │ SOAP API    │  │ BATCH PROC  │     │ │
+│  │  │ (JSP/HTML)  │  │ (JSON)      │  │ (XML)       │  │ (Scheduled) │     │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘     │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+PROBLEMS WITH MONOLITH:
+• Tight Coupling: Changes in one module affect others
+• Scalability Issues: Can't scale individual components
+• Technology Lock-in: Single tech stack for all components
+• Deployment Complexity: Whole app deployment for small changes
+• Development Bottlenecks: Teams blocked by each other
+• Fault Isolation: Single point of failure
+
+================================================================================
+
+AFTER: SERVICE-ORIENTED ARCHITECTURE (SOA)
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SERVICE REGISTRY                                 │
+│                           (UDDI)                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                    AUTONOMOUS BUSINESS SERVICES                        │ │
+│  │                                                                         │ │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────┐ │ │
+│  │  │                 │  │                 │  │                 │  │     │ │ │
+│  │  │  CATALOG        │◄─┼─►│    ORDERS       │◄─┼─►│   PAYMENTS      │◄─┼─►│SHIP.│ │ │
+│  │  │  SERVICE        │  │   SERVICE       │  │   SERVICE       │  │SERV.│ │ │
+│  │  │                 │  │                 │  │                 │  │     │ │ │
+│  │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │┌───┐│ │ │
+│  │  │ │SOAP/WS      │ │  │ │REST API     │ │  │ │REST API     │ │  ││RES││ │ │
+│  │  │ │Interface    │ │  │ │Interface    │ │  │ │Interface    │ │  ││T  ││ │ │
+│  │  │ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │  │└───┘│ │ │
+│  │  │                 │  │                 │  │                 │  │     │ │ │
+│  │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │┌───┐│ │ │
+│  │  │ │Business     │ │  │ │Business     │ │  │ │Business     │ │  ││Bus││ │ │
+│  │  │ │Logic        │ │  │ │Logic        │ │  │ │Logic        │ │  ││ine││ │ │
+│  │  │ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │  │└───┘│ │ │
+│  │  │                 │  │                 │  │                 │  │     │ │ │
+│  │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │┌───┐│ │ │
+│  │  │ │Data Access  │ │  │ │Data Access  │ │  │ │Data Access  │ │  ││Dat││ │ │
+│  │  │ │Layer        │ │  │ │Layer        │ │  │ │Layer        │ │  ││a  ││ │ │
+│  │  │ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │  │└───┘│ │ │
+│  │  │                 │  │                 │  │                 │  │     │ │ │
+│  │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │┌───┐│ │ │
+│  │  │ │Database     │ │  │ │Database     │ │  │ │Database     │ │  ││Dat││ │ │
+│  │  │ │(Isolated)   │ │  │ │(Isolated)   │ │  │ │(Isolated)   │ │  ││aba││ │ │
+│  │  │ └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │  │└───┘│ │ │
+│  │  └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────┘ │ │
+│  └─────────────────────────────────────────────────────────────────────────┘ │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           ENTERPRISE SERVICE BUS                           │
+│                           (RabbitMQ)                                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │Order Events │  │Payment Evts │  │Shipping Evts│  │Catalog Evts │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+
+SERVICE INTERFACES & CONTRACTS
+================================================================================
+
+CATALOG SERVICE (SOAP):
+• getBookById(bookId) → Book
+• searchBooks(criteria) → BookList
+• checkAvailability(bookId, quantity) → AvailabilityStatus
+• getBookPrice(bookId) → Price
+
+ORDERS SERVICE (REST):
+• POST /api/v1/orders → Create Order
+• GET /api/v1/orders/{id} → Get Order
+• PUT /api/v1/orders/{id}/status → Update Status
+• GET /api/v1/orders → List Orders
+
+PAYMENTS SERVICE (REST):
+• POST /api/v1/payments → Process Payment
+• GET /api/v1/payments/{id} → Get Payment Status
+• POST /api/v1/payments/{id}/refund → Refund Payment
+
+SHIPPING SERVICE (REST):
+• POST /api/v1/shipping → Create Shipment
+• GET /api/v1/shipping/{id} → Get Shipping Status
+• PUT /api/v1/shipping/{id}/track → Update Tracking
+
+================================================================================
+
+DATA OWNERSHIP & ISOLATION
+================================================================================
+
+BEFORE: Shared Database
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           SHARED DATABASE                                  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │ CATALOG     │  │ ORDERS      │  │ PAYMENTS    │  │ SHIPPING    │         │
+│  │ TABLES      │  │ TABLES      │  │ TABLES      │  │ TABLES      │         │
+│  │ (books,     │  │ (orders,    │  │ (payments,  │  │ (shipments, │         │
+│  │  prices)    │  │  items)     │  │  refunds)   │  │  tracking)  │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+AFTER: Database per Service
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐
+│   CATALOG DB    │  │   ORDERS DB     │  │  PAYMENTS DB    │  │ SHIPPING DB │
+│  ┌─────────────┐ │  │ ┌─────────────┐ │  │ ┌─────────────┐ │  │┌──────────┐│
+│  │ books       │ │  │ │ orders      │ │  │ │ payments    │ │  ││shipments ││
+│  │ prices      │ │  │ │ order_items │ │  │ │ refunds     │ │  ││tracking  ││
+│  └─────────────┘ │  │ └─────────────┘ │  │ └─────────────┘ │  │└──────────┘│
+└─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────┘
+
+================================================================================
+
+DECOMPOSITION BENEFITS
+================================================================================
+
+• INDEPENDENT DEPLOYMENT: Deploy services without affecting others
+• SCALABILITY: Scale individual services based on load
+• TECHNOLOGY DIVERSITY: Use different tech stacks per service
+• FAULT ISOLATION: Service failures don't cascade
+• TEAM AUTONOMY: Teams can work independently
+• MAINTAINABILITY: Smaller, focused codebases
+• PERFORMANCE: Optimize each service for its specific needs
+
+================================================================================

@@ -1,0 +1,10 @@
+com\globalbooks\orchestration\PlaceOrderServiceImpl.class
+com\globalbooks\orchestration\OrderItem.class
+com\globalbooks\orchestration\OrderItems.class
+com\globalbooks\orchestration\PlaceOrderResponse.class
+com\globalbooks\orchestration\PlaceOrderRoute.class
+com\globalbooks\orchestration\ShippingAddress.class
+com\globalbooks\orchestration\PlaceOrderRequest.class
+com\globalbooks\orchestration\PlaceOrderService.class
+com\globalbooks\orchestration\CamelOrchestrationApplication.class
+com\globalbooks\orchestration\CxfConfig.class

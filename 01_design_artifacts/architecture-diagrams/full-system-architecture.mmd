@@ -1,0 +1,78 @@
+graph TD
+    %% Client Layer
+    A[Client/Apps<br/>Web/Mobile] --> B[Enterprise Service Bus<br/>RabbitMQ Message Broker]
+
+    %% ESB to Service Registry
+    B --> C[Service Registry<br/>UDDI<br/>Service Discovery & Metadata]
+
+    %% Service Registry to Orchestration Layer
+    C --> D[Orchestration Layer]
+
+    %% Orchestration Subcomponents
+    D --> D1[BPEL Engine<br/>PlaceOrderProcess.bpel]
+    D --> D2[Camel Routes<br/>Order Flow]
+    D --> D3[Simple Orchestration<br/>Direct Calls]
+
+    %% Orchestration to Business Services
+    D1 --> E[Business Services Layer]
+    D2 --> E
+    D3 --> E
+
+    %% Business Services
+    E --> E1[Catalog Service<br/>SOAP/WS<br/>Book Search, Price Check, Availability]
+    E --> E2[Orders Service<br/>REST API<br/>Order Management, Status]
+    E --> E3[Payments Service<br/>REST API<br/>Payment Processing, Status]
+    E --> E4[Shipping Service<br/>REST API<br/>Shipment Creation, Tracking]
+
+    %% Business Services to Security Layer
+    E1 --> F[Security Layer]
+    E2 --> F
+    E3 --> F
+    E4 --> F
+
+    %% Security Subcomponents
+    F --> F1[WS-Security<br/>SOAP Services<br/>Message Encryption, Digital Signatures]
+    F --> F2[OAuth2<br/>REST Services<br/>JWT Tokens, Access Control]
+
+    %% Security to Data Layer
+    F --> G[Data Layer]
+
+    %% Data Layer Databases
+    G --> G1{{Catalog DB<br/>Books/Prices}}
+    G --> G2{{Orders DB<br/>Order Details}}
+    G --> G3{{Payments DB<br/>Payment Records}}
+    G --> G4{{Shipping DB<br/>Shipment Data}}
+
+    %% Async Event Flow (RabbitMQ)
+    E2 -.->|Order Events| B
+    E3 -.->|Payment Events| B
+    E4 -.->|Shipping Events| B
+    E1 -.->|Catalog Events| B
+
+    %% Service Registration
+    E1 -.->|Register| C
+    E2 -.->|Register| C
+    E3 -.->|Register| C
+    E4 -.->|Register| C
+
+    %% Client direct access (optional)
+    A -.->|Direct API Calls| E2
+    A -.->|Direct API Calls| E3
+    A -.->|Direct API Calls| E4
+
+    %% Styling
+    classDef clientClass fill:#e1f5fe
+    classDef esbClass fill:#fff3e0
+    classDef registryClass fill:#f3e5f5
+    classDef orchestrationClass fill:#e8f5e8
+    classDef servicesClass fill:#fff8e1
+    classDef securityClass fill:#fce4ec
+    classDef dataClass fill:#f1f8e9
+
+    class A clientClass
+    class B esbClass
+    class C registryClass
+    class D,D1,D2,D3 orchestrationClass
+    class E,E1,E2,E3,E4 servicesClass
+    class F,F1,F2 securityClass
+    class G,G1,G2,G3,G4 dataClass
